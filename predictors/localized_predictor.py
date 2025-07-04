@@ -176,7 +176,7 @@ class LocalizedPredictor:
             accuracy = total_accuracy / total_samples
             coverage = total_coverage / total_samples
             avg_set_size = total_set_size / total_samples
-            class_coverage = np.array(class_coverage) / np.array(class_size)
+            class_coverage = np.array(class_coverage) / (np.array(class_size) + 1e-6)
             coverage_gap = np.sum(np.abs(class_coverage - (1 - self.alpha))) / 100
 
             return {
