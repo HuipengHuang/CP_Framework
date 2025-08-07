@@ -21,9 +21,6 @@ class Trainer:
         self.predictor, self.adapter = get_predictor_and_adapter(args, num_classes, self.net, self.device)
 
         self.num_classes = num_classes
-        if args.imbalance == "True":
-            per_cls_weights = None
-            cls_num_list = None
         self.loss_function = get_loss_function(args, self.predictor)
 
     def train_batch_without_adapter(self, data, target):
@@ -68,7 +65,11 @@ class Trainer:
         if self.args.save_model == "True":
             models.utils.save_model(self.args, self.net)
 
-
+    def adjust_learning_rate(self, optimizer, epoch):
+        """Sets the learning rate to the initial LR decayed by 5 at 60, 120, 160 epochs"""
+        if epoch == 60 or epoch == 120 or epoch == 160:
+            for param_group in optimizer.param_groups:
+                param_group['lr'] /= 5
 
     def set_train_mode(self, train_adapter, train_net):
         assert self.adapter is not None, print("The trainer does not have an adapter.")

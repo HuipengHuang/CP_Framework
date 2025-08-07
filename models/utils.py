@@ -5,15 +5,8 @@ import torchvision.models as models
 from .resnet50 import ResNet50
 from .resnet_cifar import resnet32
 def build_model(model_type, pretrained, num_classes, device, args):
-    if args.imbalance == "True":
-        if model_type == "resnet32":
-            net = resnet32(num_classes=num_classes).to(device)
-            if args.load == "True":
-                load_model(args, net)
-            return net
-        else:
-            raise NotImplementedError("Other models are not implemented for imbalanced datasets")
-    elif model_type == 'resnet18':
+
+    if model_type == 'resnet18':
         net = models.resnet18(weights=models.ResNet18_Weights.IMAGENET1K_V1 if pretrained else None)
     elif model_type == "resnet34":
         net = models.resnet34(weights=models.ResNet34_Weights.IMAGENET1K_V1 if pretrained else None)
@@ -37,6 +30,7 @@ def build_model(model_type, pretrained, num_classes, device, args):
     else:
         if model_type != "resnet50":
             net.classifier = torch.nn.Linear(net.classifier.in_features, num_classes)
+
     if args.dataset == "cifar100":
         net.resnet.conv1 = torch.nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1, bias=False)
         net.resnet.maxpool = torch.nn.Identity()
